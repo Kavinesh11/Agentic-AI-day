@@ -97,7 +97,9 @@ class FloatingWidgetService : Service() {
         // OCR Button
         val ocrBtn = floatingView?.findViewById<ImageButton>(resources.getIdentifier("btn_ocr", "id", packageName))
         ocrBtn?.setOnClickListener {
-            // TODO: Implement screenshot functionality
+            val intent = Intent(this, ScreenshotActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
         }
 
         // Camera Button
