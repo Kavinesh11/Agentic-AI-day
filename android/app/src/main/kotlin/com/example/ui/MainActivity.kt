@@ -8,12 +8,15 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import android.provider.Settings
 import android.net.Uri
+import io.flutter.embedding.engine.FlutterEngineCache
 
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "floating_widget_channel"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        // Cache the engine so the service can access it
+        FlutterEngineCache.getInstance().put("my_engine_id", flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler {
             call, result ->
             when (call.method) {

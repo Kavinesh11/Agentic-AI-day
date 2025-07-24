@@ -103,7 +103,15 @@ class FloatingWidgetService : Service() {
         // Camera Button
         val camBtn = floatingView?.findViewById<ImageButton>(resources.getIdentifier("btn_camera", "id", packageName))
         camBtn?.setOnClickListener {
-            methodChannel?.invokeMethod("openCamera", null)
+            // Bring app to foreground
+            val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
+            launchIntent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(launchIntent)
+
+            // Give the app a moment to come to foreground, then send the event
+            floatingView?.postDelayed({
+                methodChannel?.invokeMethod("openCamera", null)
+            }, 500) // 500ms delay
         }
 
         // Close Button

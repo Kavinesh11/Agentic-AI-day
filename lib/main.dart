@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 void main() {
   runApp(MyApp());
@@ -44,6 +45,35 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _startFloatingWidget() async {
     await _requestOverlayPermission();
     await platform.invokeMethod('startFloatingWidget');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    platform.setMethodCallHandler(_handleNativeCalls);
+  }
+
+  Future<void> _handleNativeCalls(MethodCall call) async {
+    if (call.method == 'openCamera') {
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(source: ImageSource.camera);
+      if (pickedFile != null) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => CameraPreviewScreen(imagePath: pickedFile.path),
+          ),
+        );
+      }
+    } else if (call.method == 'onScreenshot') {
+      Uint8List imageBytes = call.arguments;
+      // Show the screenshot in your app, e.g.:
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          content: Image.memory(imageBytes),
+        ),
+      );
+    }
   }
 
   @override
