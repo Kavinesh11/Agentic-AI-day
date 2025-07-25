@@ -1,5 +1,3 @@
-"""
-API Endpoints Module
+from . import upload, receipts, passes
 
-This module contains all the API endpoint definitions.
-"""
+__all__ = ["upload", "receipts", "passes"]
