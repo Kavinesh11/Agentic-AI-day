@@ -1,81 +1,57 @@
-# Receipt Processor Requirements
+# Receipt Processor Requirements - A2A + ADK Compliant
 
-# Web Framework
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
+# ===== CORE A2A REQUIREMENTS =====
+# Official A2A Python SDK with all features
+a2a-sdk[grpc,sql]==1.0.0
 
-# Data Validation
-pydantic==2.5.0
-pydantic-settings==2.1.0
+# ===== CORE ADK REQUIREMENTS =====
+# ADK Core with session and memory services
+google-adk==1.5.0
 
-# Authentication & Security
-python-jose[cryptography]==3.3.0
-passlib[bcrypt]==1.7.4
-python-multipart==0.0.6
+# ===== OPTIONAL ADK EXTENSIONS =====
+# For Vertex AI session and memory services (production)
+google-adk[vertexai]
 
-# Database & Storage
-firebase-admin==6.4.0
-google-cloud-firestore==2.13.1
-google-cloud-storage==2.10.0
+# ===== DATA VALIDATION =====
+# Pydantic - Both A2A and ADK use Pydantic extensively
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
 
-google-adk 
-# Image Processing & OCR
-Pillow==10.1.0
-pytesseract==0.3.10
-opencv-python==4.8.1.78
-pdf2image==1.16.3
+# ===== A2A SERVER REQUIREMENTS =====
+# Starlette for A2A server (required by a2a-sdk)
+starlette>=0.32.0
+# Uvicorn for ASGI server
+uvicorn[standard]>=0.24.0
+# HTTP client for A2A communication
+httpx>=0.25.0
 
-# Google Vision API (alternative OCR)
-google-cloud-vision==3.5.0
+# ===== AUTHENTICATION & SECURITY =====
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+python-multipart>=0.0.6
 
-# AWS Textract (alternative OCR)
-boto3==1.34.0
-botocore==1.34.0
+# ===== CLOUD & DATABASE (for Firebase integration if needed) =====
+# Firebase for storage and database (optional)
+firebase-admin>=6.4.0
+google-cloud-firestore>=2.13.1
+google-cloud-storage>=2.10.0
 
-# Apple Wallet Pass Generation
-cryptography==41.0.8
+# ===== IMAGE PROCESSING & OCR =====
+Pillow>=10.1.0
+pytesseract>=0.3.10
+opencv-python>=4.8.1.78
+pdf2image>=1.16.3
 
-# HTTP Requests
-requests==2.31.0
-aiohttp==3.9.1
+# ===== WALLET PASS GENERATION =====
+qrcode[pil]>=7.4.2
 
-# Date/Time Handling
-python-dateutil==2.8.2
+# ===== ASYNC AND UTILITIES =====
+asyncio-timeout>=4.0.3
 
-# Environment Variables
-python-dotenv==1.0.0
 
-# Logging
-structlog==23.2.0
+# ===== MCP INTEGRATION (if using MCP tools) =====
+mcp>=1.0.0
 
-# Testing
-pytest==7.4.3
-pytest-asyncio==0.21.1
-httpx==0.25.2
-
-# Development Tools
-black==23.11.0
-flake8==6.1.0
-mypy==1.7.1
-
-# Caching (optional)
-redis==5.0.1
-
-# File Type Detection
-python-magic==0.4.27
-
-# QR Code Generation
-qrcode[pil]==7.4.2
-
-# JSON Web Tokens
-PyJWT==2.8.0
-
-# Async Database Support (if using PostgreSQL)
-asyncpg==0.29.0
-sqlalchemy[asyncio]==2.0.23
-
-# Background Task Processing
-celery==5.3.4
-
-# Data Serialization
-orjson==3.9.10
+# ===== DEVELOPMENT & TESTING =====
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
