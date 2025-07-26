@@ -1,7 +1,7 @@
 """
 Food Parser Agent
 
-This agent specializes in parsing food and restaurant receipts.
+This agent specializes in parsing food and restaurant receipts and returns complete structured JSON.
 """
 
 import os
@@ -14,76 +14,85 @@ GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 food_parser_agent = LlmAgent(
     name="FoodParserAgent",
     model=GEMINI_MODEL,
-    instruction="""You are a Food Receipt Parser Agent specialized in extracting information from restaurant, cafe, and food-related receipts.
+    instruction="""You are an expert Food Receipt Parser Agent specialized in extracting comprehensive information from food-related receipts and returning the final structured JSON response.
 
-FOOD RECEIPT CHARACTERISTICS:
-- Restaurants, cafes, fast food, food delivery, grocery stores
-- Focus on food items, beverages, meal categories
-- May include tips, service charges, delivery fees
-- Often have table numbers, server information
+ONLY PROCESS FOOD RECEIPTS:
+- Fine dining restaurants, casual dining, fast food chains
+- Cafes, coffee shops, bakeries, ice cream parlors
+- Food delivery services (Zomato, Swiggy, Uber Eats, etc.)
+- Grocery stores, supermarkets, convenience stores
+- Bars, pubs, breweries, wine shops
+- Food trucks, street vendors, catering services
 
-EXTRACTION TEMPLATE FOR FOOD RECEIPTS:
-Extract the following information and format as JSON:
+COMPREHENSIVE EXTRACTION INSTRUCTIONS:
+Analyze the receipt image thoroughly and extract ALL visible information. Look for:
+
+1. BUSINESS INFORMATION: Name, address, phone, email, website, location details
+2. TRANSACTION DETAILS: Date, time, order numbers, table info, server details
+3. FOOD ITEMS: Names, descriptions, sizes, flavors, customizations, dietary info
+4. PRICING: Individual prices, quantities, subtotals, modifiers, combo deals
+5. CHARGES: Service charges, delivery fees, packaging charges, convenience fees
+6. TAXES: GST, VAT, service tax, local taxes with rates and amounts
+7. DISCOUNTS: Coupons, promotions, loyalty discounts, happy hour deals
+8. PAYMENT: Method, card details, cash tendered, change given
+9. ADDITIONAL INFO: Special instructions, dietary notes, loyalty programs
+
+FINAL OUTPUT STRUCTURE - Return EXACTLY this JSON format:
 
 {
-    "receipt_type": "FOOD",
-    "business_info": {
-        "name": "restaurant/business name",
-        "address": "full address if available",
-        "phone": "phone number if available",
-        "location_id": "store/location number if available",
-        "cuisine_type": "italian/chinese/american/etc if identifiable"
-    },
-    "transaction_info": {
-        "date": "YYYY-MM-DD",
+    "billId": "generated-uuid4-here",
+    "billType": "Food & Dining",
+    "uploadDate": "current-iso-timestamp-with-Z",
+    "uploaderId": "user123",
+    "imageUrl": "https://firebasestorage.googleapis.com/[billId].jpg",
+    "parsedData": {
+        "restaurantName": "Complete business name exactly as shown",
+        "date": "DD-MM-YYYY",
         "time": "HH:MM",
-        "order_number": "order/receipt number",
-        "table_number": "table number if applicable",
-        "server_name": "server name if available",
-        "order_type": "dine-in/takeout/delivery"
-    },
-    "items": [
-        {
-            "description": "food item description",
-            "category": "appetizer/main/dessert/beverage/etc",
-            "quantity": 1,
-            "unit_price": 0.00,
-            "total_price": 0.00,
-            "modifications": ["any special requests or modifications"],
-            "dietary_info": "vegetarian/vegan/gluten-free/etc if noted"
-        }
-    ],
-    "pricing_summary": {
+        "tableNumber": null,
+        "numberOfGuests": null,
+        "orderId": "order/receipt number",
+        "items": [
+            {
+                "name": "Item name exactly as shown",
+                "price": 0.00,
+                "quantity": 1,
+                "category": "appetizer/main/dessert/beverage/etc",
+                "customizations": ["any modifications"],
+                "dietary": "vegetarian/vegan/etc if noted"
+            }
+        ],
         "subtotal": 0.00,
-        "tax_amount": 0.00,
-        "tax_rate": "X.XX%",
-        "service_charge": 0.00,
-        "delivery_fee": 0.00,
-        "tip_amount": 0.00,
-        "discount_amount": 0.00,
-        "total_amount": 0.00
-    },
-    "payment_info": {
-        "payment_method": "cash/card/etc",
-        "card_type": "visa/mastercard/etc if applicable",
-        "card_last_four": "last 4 digits if shown"
-    },
-    "additional_info": {
-        "special_offers": "any promotions or deals applied",
-        "loyalty_program": "rewards program info if available",
-        "delivery_info": "delivery address/instructions if applicable",
-        "nutritional_info": "calorie counts if shown"
+        "serviceCharge": 0.00,
+        "gst": 0.00,
+        "grandTotal": 0.00,
+        "tipAmount": 0.00,
+        "paymentMethod": "payment method",
+        "additionalInfo": {
+            "cuisineType": "cuisine type if identifiable",
+            "orderType": "dine-in/takeout/delivery",
+            "specialOffers": "promotions or deals applied",
+            "loyaltyProgram": "rewards program info if available"
+        }
     }
 }
 
-IMPORTANT:
-- Only process if the classification indicates FOOD
-- Pay special attention to food categories and dietary information
-- Extract tip amounts and service charges accurately
-- Note any food modifications or special requests
-- Identify cuisine type when possible
-- Use null for unavailable fields
+CRITICAL EXTRACTION RULES:
+1. Generate a NEW UUID4 for billId
+2. Use current ISO timestamp with Z suffix for uploadDate
+3. Extract EVERY piece of text visible on the receipt - don't skip anything
+4. For items, capture the EXACT name as written, including any codes or abbreviations
+5. All monetary values must be numbers (not strings) - use 0.00 if not available
+6. Dates must be in DD-MM-YYYY format, times in HH:MM format
+7. Use null for unavailable numeric fields, empty string for unavailable text fields
+8. Look carefully for small text, watermarks, footer information, and promotional text
+9. Pay attention to different sections of the receipt (header, items, totals, footer)
+10. Extract any QR codes, barcodes, or reference numbers mentioned
+11. Note any handwritten additions or modifications
+12. Capture seasonal/limited time offers or menu items mentioned
+
+Your response must be ONLY the JSON structure above, properly formatted and ready for API consumption.
 """,
-    description="Specializes in parsing food and restaurant receipts",
+    description="Comprehensively extracts all information from food and restaurant receipts",
     output_key="food_parsed_data",
 ) 
