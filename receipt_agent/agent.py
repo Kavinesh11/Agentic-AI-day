@@ -11,7 +11,7 @@ from google.adk.agents import LlmAgent
 from .subagents.retail_parser_agent import retail_parser_agent
 from .subagents.food_parser_agent import food_parser_agent
 from .subagents.misc_parser_agent import misc_parser_agent
-from .subagents.travel_parser_agent import travel_parser_agent
+from .subagents.travel_parser_agent import travel_parser_agent_with_mcp
 from .subagents.utility_parser_agent import utility_parser_agent
 from .subagents.subscription_parser_agent import subscription_parser_agent
 from .subagents.medical_parser_agent import medical_parser_agent
@@ -32,7 +32,7 @@ Your workflow:
 CLASSIFICATION RULES:
 - **RETAIL & SHOPPING**: Department stores, electronics, clothing, general merchandise, Amazon, Flipkart, Walmart → Delegate to RetailParserAgent
 - **FOOD & DINING**: Restaurants, cafes, food delivery, grocery stores, table service → Delegate to FoodParserAgent  
-- **TRAVEL & TRANSPORTATION**: Uber, airlines, hotels, car rentals, booking confirmations, departure times → Delegate to TravelParserAgent
+- **TRAVEL & TRANSPORTATION**: Uber, airlines, hotels, car rentals, booking confirmations, departure times → Delegate to TravelParserAgentWithMCP
 - **UTILITY BILLS**: Electricity, water, internet, phone bills, customer IDs, meter readings → Delegate to UtilityParserAgent
 - **SUBSCRIPTION SERVICES**: Netflix, Spotify, monthly recurring charges, streaming services, software subscriptions → Delegate to SubscriptionParserAgent
 - **MEDICAL & PHARMACY**: Prescriptions, dosage information, consultation fees, hospital bills, pharmacy receipts → Delegate to MedicalParserAgent
@@ -58,7 +58,7 @@ DELEGATION INSTRUCTIONS:
 Once classified, delegate the ENTIRE task to the appropriate specialist:
 - For RETAIL & SHOPPING receipts → Use RetailParserAgent
 - For FOOD & DINING receipts → Use FoodParserAgent  
-- For TRAVEL & TRANSPORTATION receipts → Use TravelParserAgent
+- For TRAVEL & TRANSPORTATION receipts → Use TravelParserAgentWithMCP (automatically sends to MCP endpoint)
 - For UTILITY BILLS → Use UtilityParserAgent
 - For SUBSCRIPTION SERVICES → Use SubscriptionParserAgent
 - For MEDICAL & PHARMACY receipts → Use MedicalParserAgent
@@ -80,11 +80,12 @@ IMPORTANT:
 - Medical receipts include both pharmacy prescriptions and medical service bills
 - Education receipts include tuition, course fees, and educational material purchases
 - Subscription services include both digital services and recurring membership fees
+- Travel receipts will automatically be sent to the MCP endpoint at http://20.235.138.121/mcp/
 """,
     sub_agents=[
         retail_parser_agent,
         food_parser_agent,
-        travel_parser_agent,
+        travel_parser_agent_with_mcp,
         utility_parser_agent,
         subscription_parser_agent,
         medical_parser_agent,

@@ -26,9 +26,8 @@ import uvicorn
 from dotenv import load_dotenv
 
 # ADK imports following best practices
-from google.adk.cli.fast_api import get_fast_api_app
 from google.adk.runners import Runner, InMemoryRunner
-from google.adk.sessions import InMemorySessionService, InMemoryArtifactService
+from google.adk.sessions import InMemorySessionService
 from google.adk.agents import LiveRequestQueue
 from google.adk.agents.run_config import RunConfig
 from google.genai import types
@@ -40,7 +39,6 @@ load_dotenv()
 
 # Initialize ADK services following best practices
 session_service = InMemorySessionService()
-artifact_service = InMemoryArtifactService()
 APP_NAME = "Receipt Management System"
 DEFAULT_USER_ID = "api_user"
 
@@ -91,40 +89,25 @@ async def cleanup_runner_cache():
         _runner_cache.clear()
         print("Runner cache cleared")
 
-# Get ADK's standardized FastAPI app with proper configuration
-current_dir = Path(__file__).parent
-app = get_fast_api_app(agent_dir=str(current_dir / "receipt_agent"))
-
-# Update app metadata with enhanced information
-app.title = "Receipt Management System"
-app.description = """
-A multi-agent receipt processing system using Gemini 2.0 Flash with ADK integration.
-Features:
-- Real-time WebSocket streaming
-- Cached Runner instances for performance
-- Live request queue for concurrent processing
-- Advanced session management
-"""
-app.version = "2.0.0"
-
+# Create standard FastAPI app
 # Mount static files for web UI
+current_dir = Path(__file__).parent
 static_dir = current_dir / "static"
-if static_dir.exists():
-    app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
+# Lifespan context manager
+from contextlib import asynccontextmanager
 
-@app.on_event("startup")
-async def startup_event():
-    """Initialize services and caches on startup."""
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
     print("🚀 Starting Receipt Management System...")
     print(f"📋 App: {APP_NAME}")
     print(f"🤖 Agent: {root_agent.name}")
     print("✅ Ready for receipt processing!")
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Cleanup resources on shutdown."""
+    
+    yield
+    
+    # Shutdown
     print("🔄 Shutting down Receipt Management System...")
 
     # Cleanup active WebSocket connections
@@ -156,6 +139,25 @@ async def shutdown_event():
     # Cleanup runner cache
     await cleanup_runner_cache()
     print("✅ Shutdown complete")
+
+# Update app with lifespan
+app = FastAPI(
+    title="Receipt Management System",
+    description="""
+A multi-agent receipt processing system using Gemini 2.0 Flash with ADK integration.
+Features:
+- Real-time WebSocket streaming
+- Cached Runner instances for performance
+- Live request queue for concurrent processing
+- Advanced session management
+""",
+    version="2.0.0",
+    lifespan=lifespan
+)
+
+# Mount static files for web UI
+if static_dir.exists():
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 
 @app.get("/")
@@ -218,7 +220,6 @@ async def health_check():
             "framework": "Google ADK",
             "services": {
                 "session_service": "operational",
-                "artifact_service": "operational",
                 "agent": "ready",
                 "runner_cache": "operational"
             },
