@@ -32,6 +32,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   static const platform = MethodChannel('floating_widget_channel');
 
+  File? _uploadedImage;
+  bool _overlayActive = false;
+
   Future<void> _requestOverlayPermission() async {
     if (!await Permission.systemAlertWindow.isGranted) {
       await Permission.systemAlertWindow.request();
@@ -45,6 +48,27 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _startFloatingWidget() async {
     await _requestOverlayPermission();
     await platform.invokeMethod('startFloatingWidget');
+  }
+
+  Future<void> _stopFloatingWidget() async {
+    await platform.invokeMethod('stopFloatingWidget');
+    setState(() {
+      _overlayActive = false;
+    });
+  }
+
+  Future<void> _pickAndShowImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _uploadedImage = File(pickedFile.path);
+      });
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(content: Image.file(_uploadedImage!)),
+      );
+    }
   }
 
   @override
@@ -69,10 +93,16 @@ class _HomeScreenState extends State<HomeScreen> {
       // Show the screenshot in your app, e.g.:
       showDialog(
         context: context,
-        builder: (_) => AlertDialog(
-          content: Image.memory(imageBytes),
-        ),
+        builder: (_) => AlertDialog(content: Image.memory(imageBytes)),
       );
+    } else if (call.method == 'onScreenshotPath') {
+      final path = call.arguments as String;
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(content: Image.file(File(path))),
+      );
+    } else if (call.method == 'onUploadImage') {
+      _pickAndShowImage();
     }
   }
 
@@ -81,9 +111,31 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Gemini Floater')),
       body: Center(
-        child: ElevatedButton(
-          onPressed: _startFloatingWidget,
-          child: const Text('Start Floating Widget'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: _overlayActive
+                  ? _stopFloatingWidget
+                  : () async {
+                      await _startFloatingWidget();
+                      setState(() {
+                        _overlayActive = true;
+                      });
+                    },
+              child: Text(
+                _overlayActive
+                    ? 'Stop Floating Widget'
+                    : 'Start Floating Widget',
+              ),
+            ),
+            if (_uploadedImage != null) ...[
+              SizedBox(height: 24),
+              Text('Last Uploaded Image:'),
+              SizedBox(height: 8),
+              Image.file(_uploadedImage!, width: 200),
+            ],
+          ],
         ),
       ),
     );
@@ -93,9 +145,11 @@ class _HomeScreenState extends State<HomeScreen> {
 class FloatingButtonOverlay extends StatefulWidget {
   final VoidCallback onOcrTap;
   final VoidCallback onCameraTap;
+  final VoidCallback onUploadImageTap;
   const FloatingButtonOverlay({
     required this.onOcrTap,
     required this.onCameraTap,
+    required this.onUploadImageTap,
     Key? key,
   }) : super(key: key);
 
@@ -103,7 +157,8 @@ class FloatingButtonOverlay extends StatefulWidget {
   State<FloatingButtonOverlay> createState() => _FloatingButtonOverlayState();
 }
 
-class _FloatingButtonOverlayState extends State<FloatingButtonOverlay> with SingleTickerProviderStateMixin {
+class _FloatingButtonOverlayState extends State<FloatingButtonOverlay>
+    with SingleTickerProviderStateMixin {
   late Offset position;
   bool expanded = false;
   late AnimationController _controller;
@@ -153,8 +208,14 @@ class _FloatingButtonOverlayState extends State<FloatingButtonOverlay> with Sing
       child: GestureDetector(
         onPanUpdate: (details) {
           setState(() {
-            double newRight = (position.dx - details.delta.dx).clamp(0, screenSize.width - buttonSize);
-            double newBottom = (position.dy - details.delta.dy).clamp(0, screenSize.height - buttonSize - 24);
+            double newRight = (position.dx - details.delta.dx).clamp(
+              0,
+              screenSize.width - buttonSize,
+            );
+            double newBottom = (position.dy - details.delta.dy).clamp(
+              0,
+              screenSize.height - buttonSize - 24,
+            );
             position = Offset(newRight, newBottom);
           });
         },
@@ -227,6 +288,15 @@ class _FloatingButtonOverlayState extends State<FloatingButtonOverlay> with Sing
                 widget.onCameraTap();
               },
             ),
+            Divider(height: 1),
+            _ActionButton(
+              icon: Icons.upload_file,
+              label: 'Upload Image',
+              onTap: () {
+                _toggleExpand();
+                widget.onUploadImageTap();
+              },
+            ),
           ],
         ),
       ),
@@ -238,7 +308,11 @@ class _ActionButton extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
-  const _ActionButton({required this.icon, required this.label, required this.onTap});
+  const _ActionButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -275,9 +349,7 @@ class CameraPreviewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Camera Preview')),
-      body: Center(
-        child: Image.file(File(imagePath)),
-      ),
+      body: Center(child: Image.file(File(imagePath))),
     );
   }
-} 
+}

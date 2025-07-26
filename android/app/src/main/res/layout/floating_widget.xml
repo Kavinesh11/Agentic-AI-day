@@ -45,6 +45,14 @@
             android:contentDescription="Camera" />
 
         <ImageButton
+            android:id="@+id/btn_upload"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@android:color/transparent"
+            android:src="@android:drawable/ic_menu_upload"
+            android:contentDescription="Upload Image" />
+
+        <ImageButton
             android:id="@+id/btn_close"
             android:layout_width="40dp"
             android:layout_height="40dp"
