@@ -147,7 +147,7 @@ FINAL OUTPUT STRUCTURE - Return EXACTLY this JSON format:
     "uploaderId": "user123",
     "imageUrl": "https://firebasestorage.googleapis.com/[billId].jpg",
     "parsedData": {
-        "MerchantName": "Complete provider name exactly as shown",
+        "merchant_name": "Complete provider name exactly as shown",
         "providerType": "pharmacy/doctor/hospital/dental/vision/lab/etc",
         "date": "DD-MM-YYYY",
         "time": "HH:MM",

@@ -154,7 +154,7 @@ FINAL OUTPUT STRUCTURE - Return EXACTLY this JSON format:
     "uploaderId": "user123",
     "imageUrl": "https://firebasestorage.googleapis.com/[billId].jpg",
     "parsedData": {
-        "MerchantName": "Complete institution name exactly as shown",
+        "merchant_name": "Complete institution name exactly as shown",
         "institutionType": "university/college/school/training/certification/etc",
         "semester": "academic term (Fall 2024, Spring 2025, etc)",
         "academicYear": "academic year",
