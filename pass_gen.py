@@ -175,7 +175,7 @@ if __name__ == '__main__':
 
     # Fetch the top document from the "bills" collection (ordered by timestamp or any field you prefer)
     bill_docs = db.collection("bills")
-    docs = bill_docs.limit(1).stream()
+    docs = bill_docs.order_by("uploadDate", direction=firestore.Query.DESCENDING).limit(1).stream()
     for doc in docs:
         sample_bill_content = doc.to_dict()
         break
