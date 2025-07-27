@@ -145,11 +145,11 @@ FINAL OUTPUT STRUCTURE - Return EXACTLY this JSON format:
     "uploaderId": "user123",
     "imageUrl": "https://firebasestorage.googleapis.com/[billId].jpg",
     "parsedData": {
-        "merchant_name": "Complete restaurant/business name exactly as shown", // #must
-        "date": "YYYY-MM-DD", // #optional
-        "total_amount": 0.00, // #must
-        "currency": "INR", // #must
-        "items": [ // #optional
+        "merchant_name": "Complete restaurant/business name exactly as shown", 
+        "date": "YYYY-MM-DD", 
+        "total_amount": 0.00, 
+        "currency": "INR", 
+        "items": [ 
             {
                 "name": "Item name exactly as shown",
                 "price": 0.00,

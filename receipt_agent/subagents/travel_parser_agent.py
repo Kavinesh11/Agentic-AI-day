@@ -186,9 +186,11 @@ FINAL OUTPUT STRUCTURE - Return EXACTLY this JSON format:
     "uploaderId": "user123",
     "imageUrl": "https://firebasestorage.googleapis.com/[billId].jpg",
     "parsedData": {
-        "serviceName": "Complete service provider name exactly as shown",
+        "MerchantName": "Complete service provider name exactly as shown",
         "serviceType": "rideshare/airline/hotel/rental/transit/etc",
         "date": "DD-MM-YYYY",
+        "total_amount": 0.00,
+        "currency": "INR",
         "time": "HH:MM",
         "bookingId": "booking/confirmation number",
         "tripDetails": {

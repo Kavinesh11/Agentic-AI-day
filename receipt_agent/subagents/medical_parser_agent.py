@@ -147,10 +147,12 @@ FINAL OUTPUT STRUCTURE - Return EXACTLY this JSON format:
     "uploaderId": "user123",
     "imageUrl": "https://firebasestorage.googleapis.com/[billId].jpg",
     "parsedData": {
-        "providerName": "Complete provider name exactly as shown",
+        "MerchantName": "Complete provider name exactly as shown",
         "providerType": "pharmacy/doctor/hospital/dental/vision/lab/etc",
         "date": "DD-MM-YYYY",
         "time": "HH:MM",
+        "total_amount": 0.00,
+        "currency": "INR",
         "patientInfo": {
             "name": "patient name if shown",
             "memberId": "insurance member ID if available",
@@ -181,7 +183,6 @@ FINAL OUTPUT STRUCTURE - Return EXACTLY this JSON format:
             "coinsurance": 0.00,
             "planCoverage": 0.00
         },
-        "totalCharges": 0.00,
         "insurancePayment": 0.00,
         "patientResponsibility": 0.00,
         "paymentMethod": "payment method",

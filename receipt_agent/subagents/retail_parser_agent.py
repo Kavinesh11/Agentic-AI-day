@@ -146,8 +146,10 @@ FINAL OUTPUT STRUCTURE - Return EXACTLY this JSON format:
     "uploaderId": "user123",
     "imageUrl": "https://firebasestorage.googleapis.com/[billId].jpg",
     "parsedData": {
-        "storeName": "Complete store name exactly as shown",
+        "MerchantName": "Complete store name exactly as shown",
         "date": "DD-MM-YYYY",
+        "total_amount": 0.00,
+        "currency": "INR",
         "time": "HH:MM",
         "storeNumber": "store number or null",
         "transactionId": "transaction number",
@@ -164,7 +166,7 @@ FINAL OUTPUT STRUCTURE - Return EXACTLY this JSON format:
         "subtotal": 0.00,
         "discount": 0.00,
         "tax": 0.00,
-        "grandTotal": 0.00,
+        "total_amount": 0.00,
         "paymentMethod": "payment method",
         "additionalInfo": {
             "returnPolicy": "return policy if shown",

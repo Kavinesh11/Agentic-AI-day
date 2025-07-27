@@ -146,10 +146,12 @@ FINAL OUTPUT STRUCTURE - Return EXACTLY this JSON format:
     "uploaderId": "user123",
     "imageUrl": "https://firebasestorage.googleapis.com/[billId].jpg",
     "parsedData": {
-        "utilityProvider": "Complete utility company name exactly as shown",
+        "merchant_name": "Complete utility company name exactly as shown",
         "utilityType": "electricity/water/gas/internet/phone/waste/municipal",
         "billDate": "DD-MM-YYYY",
         "dueDate": "DD-MM-YYYY",
+        "totalAmount": 0.00,
+        "currency": "INR",
         "customerId": "customer/account ID number",
         "serviceAddress": "service location address",
         "billingPeriod": {
