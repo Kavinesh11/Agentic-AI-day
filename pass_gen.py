@@ -2,6 +2,8 @@ import json
 import jwt
 from google.auth.crypt import RSASigner
 import datetime
+import firebase_admin
+from firebase_admin import credentials, firestore
 
 class GoogleWalletBillPass:
     def __init__(self, key_file_path: str, service_account_email: str):
@@ -65,7 +67,7 @@ class GoogleWalletBillPass:
         # This defines the overall look and feel, shared across all your bill passes
         new_class = {
             'id': class_id,
-            'issuerName': 'Rasheed',  # Replace with your company name
+            'issuerName': 'Your Company Name',  # Replace with your company name
             'reviewStatus': 'UNDER_REVIEW',  # Or 'APPROVED' if your class is already approved
             'hexBackgroundColor': '#F0F0F0',  # Light grey background
             'logo': {
@@ -99,11 +101,10 @@ class GoogleWalletBillPass:
         if not text_modules:
             text_modules.append({'header': 'Bill Details', 'body': 'No specific details extracted.', 'id': 'generic_details'})
 
-
         new_object = {
             'id': object_id,
             'classId': class_id,
-            'state': 'ACTIVE',
+            'state': 'ACTIVE',  # Or 'EXPIRED', 'INACTIVE'
             'cardTitle': {
                 'defaultValue': {
                     'language': 'en-US',
@@ -117,35 +118,22 @@ class GoogleWalletBillPass:
                 }
             },
             'textModulesData': text_modules,
-            'barcode': {
+            'barcode': { # Example: QR code with a link to the original image or more details
                 'type': 'QR_CODE',
-                'value': 'https://example.com/full_bill_details_link'
+                'value': 'https://example.com/full_bill_details_link' # Replace with actual link
             },
-            'locations': [
+            'locations': [ # Optional: if you have location data from the bill
                 {
                     'latitude': 37.424015499999996,
                     'longitude': -122.09259560000001
                 }
             ],
-            'imageModulesData': [
-                {
-                    'id': 'bill_image',
-                    'image': {
-                        'sourceUri': {
-                            'uri': 'https://example.com/path_to_your_bill_image.jpg',  # <-- Replace with your actual image URL
-                            'description': 'Bill Image'
-                        }
-                    }
-                }
-            ],
-            # ...other fields...
-        
-            'validTimeInterval': { # Optional: if the bill has a validity period
-                'start': {
-                    'date': '2023-01-01T00:00:00Z'
-                },
-                'end': '2023-12-31T23:59:59Z'
-            }
+            # 'validTimeInterval': { # Optional: if the bill has a validity period
+            #     'start': {
+            #         'date': '2023-01-01T00:00:00Z'
+            #     },
+            #     'end': '2023-12-31T23:59:59Z'
+            # }
         }
 
         # Create the JWT claims
@@ -171,23 +159,48 @@ class GoogleWalletBillPass:
 
         return wallet_link
 
+# --- Example Usage ---
 if __name__ == '__main__':
-    SERVICE_ACCOUNT_KEY_FILE = 'rasheedagenticai-168f43733e00.json' # e.g., 'my-google-wallet-api-key.json'
-    SERVICE_ACCOUNT_EMAIL = 'walletapi@rasheedagenticai.iam.gserviceaccount.com'
-    YOUR_ISSUER_ID = '3388000000022969075' # e.g., '1234567890123456789'
+    # REPLACE WITH YOUR ACTUAL CREDENTIALS AND ISSUER ID
+    # You will get these from your Google Cloud Project and Google Pay & Wallet Console
+    SERVICE_ACCOUNT_KEY_FILE = 'cred.json' # e.g., 'my-google-wallet-api-key.json'
+    SERVICE_ACCOUNT_EMAIL = 'walletapi@raseed-466617.iam.gserviceaccount.com'
+    YOUR_ISSUER_ID = '3388000000022958613' # e.g., '1234567890123456789'
 
-    # Predefined parsed content of a bill (simulating OCR output)
-    sample_bill_content = {
-        "merchant_name": "Walmart Palace",
-            "date": "2025-07-24",
-            "total_amount": 346.50,
-            "currency": "INR",
-            "items": [
-                {"name": "Large Pepperoni", "price": 18.00},
-                {"name": "Soda", "price": 2.50}
-            ],
-            "notes": "Birthday dinner"
-    }
+    cred = credentials.Certificate("agentic-ai-day-c4dda-firebase-adminsdk-fbsvc-0ea01b341e.json")
+    firebase_admin.initialize_app(cred)
+    print("Done with the creds, now creating the db")
+    db = firestore.client() 
+    print(f"Firestore client initialized. Project ID: {db.project}")
+
+    # Fetch the top document from the "bills" collection (ordered by timestamp or any field you prefer)
+    bill_docs = db.collection("bills")
+    docs = bill_docs.limit(1).stream()
+    for doc in docs:
+        sample_bill_content = doc.to_dict()
+        break
+
+    if not sample_bill_content:
+        print("No bill found in the 'bills' collection.")
+        exit()
+    
+    sample_bill_content = sample_bill_content.get('parsedData', {})
+    print(f"Fetched bill content: {sample_bill_content}")
+    # # Predefined parsed content of a bill (simulating OCR output)
+    # sample_bill_content = {
+    #     "merchant_name": "Cafe Delicious",
+    #     "total_amount": "25.75",
+    #     "currency": "INR",
+    #     "date": "2024-07-26",
+    #     "invoice_number": "INV-2024-00123",
+    #     "tax_amount": "2.25",
+    #     "items": [
+    #         {"name": "Coffee", "price": "4.50"},
+    #         {"name": "Sandwich", "price": "12.00"},
+    #         {"name": "Dessert", "price": "7.00"}
+    #     ],
+    #     "daily": "monday"
+    # }
 
     # Initialize the Google Wallet Bill Pass creator
     wallet_creator = GoogleWalletBillPass(SERVICE_ACCOUNT_KEY_FILE, SERVICE_ACCOUNT_EMAIL)
