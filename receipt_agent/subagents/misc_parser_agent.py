@@ -172,7 +172,8 @@ FINAL OUTPUT STRUCTURE - Return EXACTLY this JSON format:
             "vehicleInfo": "vehicle details if automotive service",
             "appointmentInfo": "appointment details if applicable",
             "warrantyInfo": "warranty information if available"
-        }
+        },
+        "additionalNotes": "any other relevant notes or fine print or user context"
     }
 }
 

@@ -175,7 +175,8 @@ FINAL OUTPUT STRUCTURE - Return EXACTLY this JSON format:
             "orderType": "dine-in/takeout/delivery",
             "specialOffers": "promotions or deals applied",
             "loyaltyProgram": "rewards program info if available"
-        }
+        },
+        "additionalNotes": "any other relevant notes or fine print or user context"
     }
 }
 

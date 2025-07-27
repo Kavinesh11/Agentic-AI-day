@@ -192,7 +192,8 @@ FINAL OUTPUT STRUCTURE - Return EXACTLY this JSON format:
             "medicationWarnings": "FDA warnings or contraindications",
             "followUpInstructions": "follow-up care instructions",
             "regulatoryInfo": "DEA, license, or compliance information"
-        }
+        },
+        "additionalNotes": "any other relevant notes or fine print or user context"
     }
 }
 

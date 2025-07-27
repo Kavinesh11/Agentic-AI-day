@@ -183,7 +183,8 @@ FINAL OUTPUT STRUCTURE - Return EXACTLY this JSON format:
             "environmentalPrograms": "green energy or conservation programs",
             "customerPrograms": "assistance programs or special rates",
             "regulatoryInfo": "PUC info or regulatory notices"
-        }
+        },
+        "additionalNotes": "any other relevant notes or fine print or user context"
     }
 }
 

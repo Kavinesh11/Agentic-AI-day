@@ -199,7 +199,8 @@ FINAL OUTPUT STRUCTURE - Return EXACTLY this JSON format:
             "academicCalendar": "important dates if mentioned",
             "campusServices": "included campus services",
             "contactInfo": "bursar or student services contact"
-        }
+        },
+        "additionalNotes": "any other relevant notes or fine print or user context"
     }
 }
 

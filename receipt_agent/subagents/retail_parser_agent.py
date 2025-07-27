@@ -173,7 +173,8 @@ FINAL OUTPUT STRUCTURE - Return EXACTLY this JSON format:
             "loyaltyProgram": "loyalty info if available",
             "promotions": "current promotions or offers",
             "warrantyInfo": "warranty information if available"
-        }
+        },
+        "additionalNotes": "any other relevant notes or fine print or user context"
     }
 }
 
